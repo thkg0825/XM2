@@ -1,0 +1,268 @@
+﻿<script src="~/lib/vue/dist/vue.global.js"></script>
+<link href="~/lib/element-plus/dist/index.css" rel="stylesheet" />
+<script src="~/lib/element-plus/dist/index.full.js"></script>
+<script src="~/lib/axios/dist/axios.js"></script>
+<body>
+
+	<div id="app">
+		<el-button plain v-on:click="Add()">新增</el-button>
+		<el-table :data="tableData" style="width: 100%" :header-cell-style="{background:'#FFDB6F',color:'#606266'}">
+			<el-table-column prop="firstKindName" label="I级机构名称" min-width="120%"></el-table-column>
+			<el-table-column prop="secondKindId" label="II级机构编号" min-width="120%"></el-table-column>
+			<el-table-column prop="secondKindName" label="II级机构名称" min-width="120%"></el-table-column>
+			<el-table-column prop="secondSalaryId" label="薪酬发放责任人编号" min-width="120%"></el-table-column>
+			<el-table-column prop="secondSaleId" label="销售责任人编号" min-width="120%"></el-table-column>
+			<el-table-column label="变更">
+				<template #default="scope">
+					<el-button size="small" v-on:click="handleEdit(scope.row)">
+						变更
+					</el-button>
+				</template>
+			</el-table-column>
+			<el-table-column label="删除">
+				<template #default="scope">
+					<el-button size="small" v-on:click="handleDelete(scope.row.fskId)">
+						删除
+					</el-button>
+				</template>
+			</el-table-column>
+		</el-table>
+
+		<el-dialog v-model="dialogVisible"
+				   title="II级机构变更"
+				   width="800">
+			<span>
+				<el-form ref="uruleFormRef" :model="uform" :rules="urules" label-width="auto" style="max-width: 750px">
+					<el-form-item label="I级机构名称" prop="firstKindName">
+						<el-input v-model="uform.firstKindName" />
+					</el-form-item>
+					<el-form-item label="II级机构编号" prop="secondKindId">
+						<el-input v-model="uform.secondKindId" />
+					</el-form-item>
+					<el-form-item label="II级机构名称" prop="secondKindName">
+						<el-input v-model="uform.secondKindName" />
+					</el-form-item>
+					<el-form-item label="薪酬发放责任人编号" prop="secondSalaryId">
+						<el-input type="textarea" rows="5" v-model="uform.secondSalaryId" />
+					</el-form-item>
+					<el-form-item label="销售责任人编号" prop="secondSaleId">
+						<el-input type="textarea" rows="5" v-model="uform.secondSaleId" />
+					</el-form-item>
+					<el-form-item>
+						<el-button v-on:click="udialogVisible = false">取消</el-button>
+						<el-button type="primary" v-on:click="upOk()">
+							变更
+						</el-button>
+					</el-form-item>
+				</el-form>
+
+			</span>
+
+		</el-dialog>
+		<el-dialog v-model="dialogVisibleAdd"
+				   title="II级机构添加"
+				   width="800">
+			<span>
+				<el-form ref="uruleFormRefAdd" :model="uformAdd" label-width="auto" style="max-width: 750px">
+					<el-form-item label="I级机构名称" prop="firstKindName">
+						<el-select v-model="uformAdd.firstKindName"
+								   placeholder="请选择"
+								   size="large"
+								   style="width: 240px">
+							<el-option v-for="item in options"
+									   :key="item.ffkId"
+									   :label="item.firstKindName"
+									   :value="item.firstKindId+item.firstKindName" />
+						</el-select>
+					</el-form-item>
+					<el-form-item label="II级机构编号" prop="secondKindId">
+						<el-input v-model="uformAdd.secondKindId" />
+					</el-form-item>
+					<el-form-item label="II级机构名称" prop="secondKindName">
+						<el-input v-model="uformAdd.secondKindName" />
+					</el-form-item>
+					<el-form-item label="薪酬发放责任人编号" prop="secondSalaryId">
+						<el-input type="textarea" rows="5" v-model="uformAdd.secondSalaryId" />
+					</el-form-item>
+					<el-form-item label="销售责任人编号" prop="secondSaleId">
+						<el-input type="textarea" rows="5" v-model="uformAdd.secondSaleId" />
+					</el-form-item>
+					<el-form-item>
+						<el-button v-on:click="udialogVisibleAdd = false">取消</el-button>
+						<el-button type="primary" v-on:click="Addok()">
+							添加
+						</el-button>
+					</el-form-item>
+				</el-form>
+
+			</span>
+
+		</el-dialog>
+	</div>
+
+</body>
+<script type="text/javascript">
+	const { createApp, ref, reactive, computed, watchEffect } = Vue;
+	var app = createApp({
+		setup() {
+			var tableData = ref([])
+			let dialogVisible = ref(false);
+			const uruleFormRef = ref(null);
+			let dialogVisibleAdd = ref(false);
+			const uruleFormRefAdd = ref(null);
+			//修改的数据
+			const uform = reactive({
+				fskId: '',
+				firstKindName: '',
+				secondKindId: '',
+				secondKindName: '',
+				secondSalaryId: '',
+				secondSaleId: ''
+			})
+			//添加的数据
+			const uformAdd = reactive({
+				firstKindId: '',
+				firstKindName: '',
+				secondKindId: '',
+				secondKindName: '',
+				secondSalaryId: '',
+				secondSaleId: ''
+			})
+			//点击下拉框
+			const options = ref();
+			axios.get('/CFFK/GetCFFK')
+				.then(res => {
+					options.value = res.data
+				})
+			//查询
+			function Fill() {
+				axios.get('/CFSK/GetCFSK')
+					.then(res => {
+						console.info(res.data);
+						tableData.value = res.data;
+					})
+			}
+			Fill();
+			//点击修改，弹出模态框，赋值
+			function handleEdit(row) {
+				console.info(row)
+				dialogVisible.value = true;
+				uform.fskId = row.fskId;
+				uform.firstKindName = row.firstKindName;
+				uform.secondKindId = row.secondKindId;
+				uform.secondKindName = row.secondKindName;
+				uform.secondSalaryId = row.secondSalaryId;
+				uform.secondSaleId = row.secondSaleId;
+			}
+			//点击确认修改
+			function upOk() {
+				uruleFormRef.value.validate((valid, fields) => {
+					if (valid) {
+						axios.defaults.headers["Content-Type"] = "application/x-www-form-urlencoded";
+						axios.put('/CFSK/UpdateCFSK', {
+							fskId: uform.fskId,
+							firstKindName: uform.firstKindName,
+							secondKindId: uform.secondKindId,
+							secondKindName: uform.secondKindName,
+							secondSalaryId: uform.secondSalaryId,
+							secondSaleId: uform.secondSaleId
+						}).then(res => {
+							if (res.data) {
+								console.info(res.data)
+								alert("修改成功")
+								Fill();
+								dialogVisible.value = false;
+							}
+						}).catch(err => {
+							console.log(err);
+						})
+					} else {
+						console.log('error submit!', fields)
+					}
+				})
+
+			}
+			//点击删除
+			function handleDelete(fskId) {
+				console.info(fskId)
+				if (confirm("确定删除")) {
+					axios.defaults.headers["Content-Type"] = "application/x-www-form-urlencoded";
+					axios.post('/CFSK/DeleteCFSK', {
+						id: fskId
+					}).then(res => {
+						if (res.data) {
+							Fill();
+						}
+					}).catch(err => {
+						console.log(err);
+					})
+				}
+
+			}
+			//点击增加，出现模态框
+			function Add() {
+				dialogVisibleAdd.value = true;
+				qk();
+			}
+			//点击确定增加
+			function Addok() {
+				str = uformAdd.firstKindName
+				ffid = str.substring(0, 2);
+				ffname = str.substring(2);
+				axios.defaults.headers["Content-Type"] = "application/x-www-form-urlencoded";
+				axios.put('/CFSK/AddCFSK', {
+					firstKindId: ffid,
+					firstKindName: ffname,
+					secondKindId: uformAdd.secondKindId,
+					secondKindName: uformAdd.secondKindName,
+					secondSalaryId: uformAdd.secondSalaryId,
+					secondSaleId: uformAdd.secondSaleId,
+				}).then(res => {
+					if (res.data) {
+						console.info(res.data)
+						alert("添加成功")
+						Fill();
+						dialogVisibleAdd.value = false;
+					}
+				}).catch(err => {
+					console.log(err);
+				})
+
+			}
+			//清空模态框
+			function qk() {
+				firstKindId: '';
+				firstKindName: '';
+				secondKindId: '';
+				secondKindName: '';
+				secondSalaryId: '';
+				secondSaleId: '';
+			}
+			return {
+				tableData,
+				dialogVisible,
+				uruleFormRef,
+				uform,
+				handleEdit,
+				upOk,
+				handleDelete,
+				dialogVisibleAdd,
+				uruleFormRefAdd,
+				uformAdd,
+				Add,
+				options,
+				Addok,
+
+
+			}
+		}
+	})
+	app.use(ElementPlus);
+	app.mount("#app");
+</script>
+<style type="text/css">
+	body {
+		background-color: #FFFFBB;
+		border: 1px solid #FFDB6F;
+	}
+</style>

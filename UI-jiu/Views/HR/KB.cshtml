@@ -1,0 +1,29 @@
+﻿<script src="~/lib/vue/dist/vue.global.js"></script>
+<link href="~/lib/element-plus/dist/index.css" rel="stylesheet" />
+<script src="~/lib/element-plus/dist/index.full.js"></script>
+<script src="~/lib/axios/dist/axios.js"></script>
+<body>
+	<div id="app">
+		<el-text class="mx-1" type="info">x</el-text>
+
+
+
+	</div>
+</body>
+<script type="text/javascript">
+	const { createApp, ref, reactive, computed, watchEffect } = Vue;
+	var app = createApp({
+		setup() {
+			var sj = ref('XXX')
+			return {
+				sj
+			}
+		}
+	})
+	app.use(ElementPlus);
+	app.mount("#app");
+</script>
+
+<style type="text/css">
+</style>
+

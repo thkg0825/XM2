@@ -1,0 +1,229 @@
+﻿@{
+	Layout = null;
+}
+
+<!DOCTYPE html>  
+<html lang="en">  
+<head>  
+<meta charset="UTF-8">  
+<meta name="viewport" content="width=device-width, initial-scale=1.0">  
+<title>主页</title>  
+<style>  
+    /* 基本样式重置 */  
+    body, html {  
+        margin: 0;  
+        padding: 0;  
+        width: 100%;  
+        height: 100%;  
+    }  
+  
+    /* 容器布局 */  
+    .container {  
+        display: flex;  
+        flex-direction: column;  
+        height: 100%;  
+    }  
+  
+    /* 头部样式 */  
+    header {
+            background-color: #FFD553;
+            color: white;  
+        padding: 10px 20px;  
+        text-align: center;  
+        height: 50px;
+    }  
+  
+    /* 内容区域样式 */  
+    .content {  
+        display: flex;  
+        flex-grow: 1; /* 占据剩余空间 */  
+    }  
+  
+    /* 右侧栏样式 */  
+    .sidebar {
+            background-color: #FFFFCC;
+            width: 200px; /* 你可以根据需要调整这个宽度 */  
+        overflow-y: auto; /* 如果内容超出高度，则显示滚动条 */  
+    }  
+  
+    /* 主体内容样式 */  
+    .main-content {  
+        flex-grow: 1; /* 占据剩余空间 */  
+        padding: 20px;  
+        overflow-y: auto; /* 如果需要，也可以为主体内容添加滚动条 */  
+    }
+
+
+	</style>
+    <link rel="stylesheet" href="../css/table.css" type="text/css" />
+    <link rel="stylesheet" href="../javascript/easyui/themes/default/easyui.css" />
+    <link rel="stylesheet" href="../javascript/easyui/themes/icon.css" />
+    <script type="text/javascript" src="../javascript/jquery-1.7.2.js"></script>
+    <script type="text/javascript" src="../javascript/jquery.easyui.min.js"></script>
+
+
+</head>  
+<body>  
+  
+  
+<div class="container">  
+    <header>
+			<label style="font-size:30px">人力资源管理系统</label>
+            <br />
+            <label style="margin-left:1250px"></label>欢迎你：张三(人事经理)&nbsp;
+            <input type="button" value="退出系统" class="BUTTON_STYLE1" onclick="parent.location.href='../HR/Index'" />&nbsp;&nbsp;&nbsp;&nbsp;
+    </header>  
+    <div class="content">
+            <nav>
+                <ul class="menu">
+
+                        <a href="#">招聘管理</a>
+                        <ul class="submenu">
+                            <li>
+                                <a href="#">职位发布管理</a>
+                                <ul class="submenu">
+                                    <li><a href="#">职位发布登记</a></li>
+                                    <li><a href="#">职位发布登记</a></li>
+                                    <li><a href="#">职位发布查询</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">简历管理</a>
+                                <ul class="submenu">
+                                    <li><a href="#">简历登记</a></li>
+                                    <li><a href="#">简历筛选</a></li>
+                                    <li><a href="#">有效简历查询</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">面试管理</a>
+                                <ul class="submenu">
+                                    <li><a href="#">面试结果登记</a></li>
+                                    <li><a href="#">面试筛选</a></li>
+                                </ul>
+                            </li>
+                            <li>
+                                <a href="#">录用管理</a>
+                                <ul class="submenu">
+                                    <li><a href="#">录用申请</a></li>
+                                    <li><a href="#">录用审批</a></li>
+                                    <li><a href="#">录用查询</a></li>
+                                </ul>
+                            </li>
+                        </ul>
+
+                        <a href="#">人力资源档案管理</a>
+                        <ul class="submenu">
+                                <li><a href="#">人力资源档案登记</a></li>
+                                <li><a href="#">人力资源档案登记复核</a></li>
+                                <li><a href="#">人力资源档案查询</a></li>
+                                <li><a href="#">人力资源档案变更</a></li>
+                                <li>
+                                    <a href="#">人力资源档案删除管理</a>
+                                    <ul class="submenu">
+                                        <li><a href="#">人力资源档案删除</a></li>
+                                        <li><a href="#">档案删除恢复</a></li>
+                                        <li><a href="#">人力资源档案永久删除</a></li>
+                                    </ul>
+                                </li>
+                        </ul>
+
+                    <a href="#">酬薪标准管理</a>
+                    <ul class="submenu">
+                        <li><a href="#">酬薪标准登记</a></li>
+                        <li><a href="#">酬薪标准登记复核</a></li>
+                        <li><a href="#">酬薪标准查询</a></li>
+                        <li><a href="#">酬薪标准变更</a></li>
+                    </ul>
+
+                    <a href="#">酬薪发放管理</a>
+                    <ul class="submenu">
+                        <li><a href="#">酬薪发放登记</a></li>
+                        <li><a href="#">酬薪发放登记复核</a></li>
+                        <li><a href="#">酬薪发放查询</a></li>
+                    </ul>
+
+                    <a href="#">调动管理</a>
+                    <ul class="submenu">
+                        <li><a href="#">调动登记</a></li>
+                        <li><a href="#">调动审核</a></li>
+                        <li><a href="#">调动查询</a></li>
+                    </ul>
+
+                    <a href="#">客户化设置</a>
+                    <ul class="submenu">
+                        <li>
+                            <a href="#">人力资源档案管理设置</a>
+                            <ul class="submenu">
+                                <li><a href="d:\.net\xm2\ui\views\hr\main.cshtml" onclick="yiji()">I级机构设置</a></li>
+                                <li><a href="#">II级机构设置</a></li>
+                                <li><a href="#">III级机构设置</a></li>
+                                <li><a href="#">职称设置</a></li>
+                                <li><a href="#">职位分类设置</a></li>
+                                <li><a href="#">职位设置</a></li>
+                                <li><a href="#">公共属性设置</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#">酬薪管理设置</a>
+                            <ul class="submenu">
+                                <li><a href="#">酬薪项目设置</a></li>
+                                <li><a href="#">酬薪发放方式设置</a></li>
+                            </ul>
+                        </li>
+                        <li>
+                            <a href="#">其他设置</a>
+                            <ul class="submenu">
+                                <li><a href="#">关键字查询设置</a></li>
+                            </ul>
+                        </li>
+                    </ul>
+
+                    <a href="#">标准数据报表</a>
+                    <ul class="submenu">
+                        <li><a href="#">Excel标准数据报表</a></li>
+                        <li><a href="#">Pdt标准数据报表</a></li>
+                        <li><a href="#">Xml标准数据报表</a></li>
+                    </ul>
+
+                    <a href="#">权限管理</a>
+                    <ul class="submenu">
+                        <li><a href="#">用户管理</a></li>
+                        <li><a href="#">角色管理</a></li>
+                    </ul>
+
+
+                </ul>
+            </nav>
+
+            <label style="margin-left:210px" id="xxx"></label>
+            <table></table>
+        </div>  
+</div>  
+  
+<script>  
+function toggleOverlay() {  
+    var overlay = document.getElementById('overlay');  
+    if (overlay.style.display === 'none') {  
+        overlay.style.display = 'block';  
+    } else {  
+        overlay.style.display = 'none';  
+    }  
+}  
+
+    function yiji() {
+            alert("一级");
+
+            location.href = '/HR/Index';
+    }
+</script>
+
+    <script type="text/javascript">
+        $(function () {
+            $.messager.show("<font style='font-family:宋体;'>消息提示", "欢迎你：人事经理张三！</font>", 2000);
+        });
+    </script>
+
+  
+</body>  
+</html>

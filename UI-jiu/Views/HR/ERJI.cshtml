@@ -1,0 +1,408 @@
+﻿@{
+    Layout = null;
+}
+
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+    <title>三级机构管理</title>
+    <link rel="stylesheet" href="https://unpkg.com/element-plus/dist/index.css">
+</head>
+<body>
+    <script src="https://unpkg.com/vue@3"></script>
+    <!-- 引入Element Plus -->
+    <script src="https://unpkg.com/element-plus"></script>
+    <!-- 引入axios -->
+    <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+    <div id="app">
+        <span>
+            您正在做的业务是：人力资源--客户化设置--人力资源档案管理设置--III级机构设置
+        </span><p></p>
+        <button style="float:right" v-on:click="addFirstKind">添加</button>
+
+        <!-- 表格内容 -->
+        <el-table :data="tableData" style="width: 100%">
+            <!-- 表格列 -->
+            <el-table-column prop="firstKindName" label="I级机构名称" style="color: aquamarine;"></el-table-column>
+            <el-table-column prop="secondKindName" label="II级机构名称" style="color: aquamarine;"></el-table-column>
+            <el-table-column prop="secondKindId" label="II级机构编号" style="color: aquamarine;"></el-table-column>
+            <el-table-column prop="thirdKindName" label="III级机构名称" style="color: aquamarine;"></el-table-column>
+            <el-table-column prop="secondSaleId" label="销售责任人编号" style="color: aquamarine;"></el-table-column>
+            <el-table-column prop="thirdKindIsRetail" label="是否为零售店" style="color: aquamarine;">
+                <template #default="scope">
+                    <span v-if="scope.row.thirdKindIsRetail==0">是</span>
+                    <span v-if="scope.row.thirdKindIsRetail==1">否</span>
+                </template>
+            </el-table-column>
+            <el-table-column label="操作">
+                <!-- 自定义操作列 -->
+                <template #default="{row}">
+                    <el-button link type="primary" size="small" v-on:click="upshow(row)">变更</el-button>
+                    <el-button link type="primary" size="small" v-on:click="deleteClick(row.ftkId)">删除</el-button>
+                </template>
+            </el-table-column>
+        </el-table>
+
+        <el-dialog title="添加" v-model="showModal" width="50%">
+            <span>
+                <el-form :model="formData" ref="addForm" label-width="110px" class="demo-ruleForm">
+
+                    <el-row>
+                        <el-col :span="11">
+                            <el-form-item label="II级机构名称" prop="secondKindName">
+                                <el-cascader v-model="value1"
+                                             :options="options"
+                                             :props="d"
+                                             ref="refs"
+                                             v-on:change="handleChange"></el-cascader>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="11">
+                            <el-form-item label="III级机构编号" prop="thirdKindId">
+                                <el-input v-model="formData.thirdKindId" style="width: 200px;"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
+                    <el-row>
+                        <el-col :span="11">
+                            <el-form-item label="III级机构名称" prop="thirdKindName">
+                                <el-input v-model="formData.thirdKindName" style="width: 200px;"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="20">
+                            <el-form-item label="销售责任人编号" prop="secondSaleId">
+                                <el-input v-model="formData.secondSaleId" style="width: 200px;"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="20">
+                            <el-form-item label="是否为零售店" prop="thirdKindIsRetail">
+                                <el-select v-model="sq"
+                                           style="width: 240px">
+                                    <el-option v-for="item in sf"
+                                               :key="item.id"
+                                               :label="item.name"
+                                               :value="item.id" />
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-row>
+                            <el-col :span="10">
+                                <el-form-item>
+                                    <el-button type="primary" v-on:click="submitForm()">添加</el-button>
+                                </el-form-item>
+                            </el-col>
+                            <el-col :span="10">
+                                <el-form-item>
+                                    <el-button v-on:click="resetForm()">重置</el-button>
+                                </el-form-item>
+                            </el-col>
+                        </el-row>
+                </el-form>
+            </span>
+        </el-dialog>
+
+        <el-dialog title="修改" v-model="upvis" width="50%">
+            <span>
+                <el-form :model="up" ref="upForm" label-width="110px" class="demo-ruleForm">
+                    <el-row>
+                        <el-col :span="11">
+                            <el-form-item label="II级机构名称" prop="secondKindName">
+                                <el-cascader v-model="value1"
+                                             :options="options"
+                                             :props="d"
+                                             ref="refs"
+                                             v-on:change="handleChange"></el-cascader>
+                            </el-form-item>
+                        </el-col>
+                        <el-col :span="11">
+                            <el-form-item label="III级机构编号" prop="thirdKindId">
+                                <el-input v-model="up.thirdKindId" style="width: 200px;"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+
+                    <el-row>
+                        <el-col :span="11">
+                            <el-form-item label="III级机构名称" prop="thirdKindName">
+                                <el-input v-model="up.thirdKindName" style="width: 200px;"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="20">
+                            <el-form-item label="销售责任人编号" prop="secondSaleId">
+                                <el-input v-model="up.secondSaleId" style="width: 200px;"></el-input>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-col :span="20">
+                            <el-form-item label="是否为零售店" prop="thirdKindIsRetail">
+                                <el-select v-model="sq"
+                                           style="width: 240px">
+                                    <el-option v-for="item in sf"
+                                               :key="item.id"
+                                               :label="item.name"
+                                               :value="item.id" />
+                                </el-select>
+                            </el-form-item>
+                        </el-col>
+                    </el-row>
+                    <el-row>
+                        <el-row>
+                            <el-row>
+                                <el-col :span="10">
+                                    <el-form-item>
+                                        <el-button type="primary" v-on:click="upcffk()">修改</el-button>
+                                    </el-form-item>
+                                </el-col>
+                                <el-col :span="10">
+                                    <el-form-item>
+                                        <el-button v-on:click="resetForm('addForm')">重置</el-button>
+                                    </el-form-item>
+                                </el-col>
+                            </el-row>
+                </el-form>
+            </span>
+        </el-dialog>
+
+    </div>
+
+
+    <script>
+        const app = Vue.createApp({
+            data() {
+                return {
+                    showModal: false,
+                    upvis: false,
+                    options: [],
+                    value1: [],
+                    sq: 0,
+                    sf: [
+                        {
+                            name: "是",
+                            id: 0
+                        },
+                        {
+                            name: "否",
+                            id: 1
+                        }
+                    ],
+
+                    d: {
+                        label: 'firstKindName', value: 'firstKindId', children: 'childern'
+                    },
+                    FirstKindId: '',
+                    FirstKindName: '',
+                    SecondKindName: '',
+                    SecondKindId: '',
+                    formData: {
+                        firstKindId: 0,
+                        firstKindName: '',
+                        secondKindId: 0,
+                        secondKindName: '',
+
+                        thirdKindId: 0,
+                        thirdKindName: '',
+                        secondSaleId: 0,
+                        thirdKindIsRetail: ''
+                    },
+                    up: {
+                        ftkId: 0,
+                        firstKindId: 0,
+                        firstKindName: '',
+                        secondKindId: 0,
+                        secondKindName: '',
+
+                        thirdKindId: 0,
+                        thirdKindName: '',
+                        secondSaleId: 0,
+                        thirdKindIsRetail: ''
+                    },
+                    rules: {
+                        firstKindId: [
+                            { required: true, message: '请输入I级机构编号', trigger: 'blur' }
+                        ],
+                        firstKindName: [
+                            { required: true, message: '请输入I级机构名称', trigger: 'blur' }
+                        ]
+                    },
+                    tableData: []
+                };
+            },
+            methods: {
+                handleChange() {
+                    const a = [];
+                    const b = [];
+                    const arr = this.$refs["refs"].getCheckedNodes()[0].pathNodes;
+                    arr.forEach((i) => {
+                        a.push(i.label);
+                        b.push(i.value);
+                    });
+
+                    this.FirstKindId = b[0];
+                    this.FirstKindName = a[0];
+
+                    this.SecondKindName = a[1];
+                    this.SecondKindId = b[1];
+                },
+
+                addFirstKind() {
+                    this.fill1();
+                    this.showModal = true;
+                },
+                fill1() {
+                    axios.get("/Home/CFTKLJInsetAsyncs")
+                        .then(res => {
+                            console.log(res.data);
+                            this.options = res.data
+                        })
+                        .catch(err => {
+                            alert("请求失败");
+                            console.log(err);
+                        })
+                },
+                upshow(row) {
+
+                    // 将表格行数据拷贝到修改表单数据中
+                    this.up = Object.assign({}, row);
+
+                    // 将需要的值传递给下拉列表的 v-model
+                    this.value1 = [this.up.firstKindId, this.up.secondKindId];
+                    this.fill1();
+                    this.upvis = true; // 显示修改对话框
+                },
+                upcffk() {
+
+                    // 构造要发送的修改数据对象
+                    const updatedData = {
+                        ftkId: this.up.ftkId,
+                        firstKindId: this.FirstKindId,
+                        firstKindName: this.FirstKindName,
+                        secondKindId: this.SecondKindId,
+                        secondKindName: this.SecondKindName,
+                        thirdKindId: this.up.thirdKindId,
+                        thirdKindName: this.up.thirdKindName,
+                        secondSaleId: this.up.secondSaleId,
+                        thirdKindIsRetail: this.sq
+                    };
+
+                    axios.get("/Home/updateCFTK", {
+                        params: updatedData,
+
+                    })
+                        .then(response => {
+                            if (response.data) {
+                                // 执行成功后的操作，例如刷新数据
+                                alert('修改成功');
+                                this.upvis = false; // 关闭对话框
+                                this.fetchData(); // 重新获取数据
+                            }
+                        })
+                        .catch(error => {
+                            // 处理错误情况
+                            alert('请求失败:', error);
+                        });
+                },
+                submitForm() {
+                    // 构造要发送的新增数据对象
+                    const newData = {
+                        firstKindId: this.FirstKindId,
+                        firstKindName: this.FirstKindName,
+                        secondKindId: this.SecondKindId,
+                        secondKindName: this.SecondKindName,
+
+                        thirdKindId: this.formData.thirdKindId,
+                        thirdKindName: this.formData.thirdKindName,
+                        secondSaleId: this.formData.secondSaleId,
+                        thirdKindIsRetail: this.sq
+                    };
+                    axios.get('/Home/addCFTK', {
+                        params: newData
+
+                    })
+                        .then(response => {
+                            if (response.data) {
+                                alert("添加成功！");
+                                this.cz();
+                                this.showModal = false; // 关闭对话框
+                                this.fetchData(); // 重新获取数据
+                            } else {
+                                alert("添加失败！！！");
+                            }
+                        })
+                        .catch(error => {
+                            // 处理错误情况
+                            alert("请求失败！", error);
+                        });
+
+                    // 发送异步 POST 请求以新增数据
+                },
+                resetForm() {
+                    this.cz();
+                },
+                cz() {
+                    this.value1 = "";
+                    this.formData.thirdKindId = 0;
+                    this.formData.thirdKindName = "";
+                    this.formData.secondSaleId = 0;
+                    this.sq = 0;
+                },
+                fetchData() {
+                    try {
+                        const vm = this;
+                        axios.get("/Home/getCFTK")
+                            .then(function (response) {
+                                console.log(response.data);
+                                vm.tableData = response.data;
+                            })
+                            .catch(function (error) {
+                                alert("请求失败！！");
+                                console.error(error);
+                            });
+                    } catch (error) {
+                        console.error(error);
+                    }
+                },
+
+                deleteClick(row) {
+                    const vm = this;
+                    if (confirm("确认删除吗?")) {
+                        axios.get("/Home/DeleteCFTK?FtkId=" + row)
+                            .then(function (response) {
+                                if (response.data) {
+                                    alert("删除成功");
+                                    vm.fetchData();
+                                } else {
+                                    alert("删除失败");
+                                }
+                            })
+                            .catch(function (error) {
+                                console.error(error);
+                                alert("请求失败");
+                            });
+                    }
+                }
+            },
+            mounted() {
+                this.fill1();
+                this.fetchData();
+            }
+        });
+
+        // 安装 Element Plus
+        app.use(ElementPlus);
+
+        // 挂载应用程序到页面上
+        app.mount("#app");
+    </script>
+</body>
+</html>
